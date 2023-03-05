@@ -19,6 +19,7 @@ class SingletonConstruction(type):
                     cls._instances[cls] = super(SingletonConstruction, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+# make DatabaseManager a singleton, the class that manages database state (use and .exit at the moment)
 class DatabaseManager(metaclass=SingletonConstruction):
     def __init__(self):
         self.db_in_use = ""
@@ -48,6 +49,7 @@ class DatabaseManager(metaclass=SingletonConstruction):
         print("All done.")
         os._exit(0)
 
+# the class that implements the database GUI, it redirects stdout and prints to the window
 class DatabaseGUI:
     def __init__(self):
         self.input = ""
@@ -71,8 +73,8 @@ class DatabaseGUI:
     def setup_dpg(self):
         dpg.create_context()
         dpg.create_viewport(title='Database', width=600, height=200)
-        self.set_icon()
-        self.set_font()
+        #self.set_icon()
+        #self.set_font()
         dpg.setup_dearpygui()
         dpg.show_viewport()
 
@@ -110,7 +112,8 @@ class DatabaseGUI:
     def __clear_callback(self, sender, user_data):
         self.output = ""
         dpg.configure_item("output", default_value=self.output)
-    
+
+# The database interpreter, just a while True: parse commands and execute functions
 def interpreter():
     db = DatabaseManager()
     try:
@@ -122,11 +125,13 @@ def interpreter():
     except KeyboardInterrupt:
         print("exiting interpreter")
 
+# The database gui, invokes the DatabaseGUI class instance
 def gui():
     dbgui = DatabaseGUI()
     with dbgui:
         dbgui.run()
 
+# The database function batch processor, goes through each line of a file, parses it, then executes the relevant function
 def batch_processor(argv):
     db = DatabaseManager()
     try:
@@ -140,14 +145,17 @@ def batch_processor(argv):
     except:
         pass
 
+# The function that does argument passthrough to the database_parser
 def parse_command(*args):
     return dbp.parse(*args)
 
+# The high level function that grabs the proper database function to execute based off the parser return values
 def execute_function(id: dbp.DatabaseFunction, args):
     if id != dbp.DatabaseFunction.COMMENT:
         func = __get_database_function(id)
         ret = func(**args)
 
+# The database function map that links a function enumerator to a function callable
 def __get_database_function(id: dbp.DatabaseFunction):
     database_function_map = {dbp.DatabaseFunction.EXIT:DatabaseManager().exit,
                              dbp.DatabaseFunction.DATABASE_USE:DatabaseManager().use_db,
@@ -163,6 +171,9 @@ def __get_database_function(id: dbp.DatabaseFunction):
     wrapper = __get_database_function_wrapper(raw_func)
     return wrapper(raw_func)
 
+# The wrapper map that gets the proper function wrapper based off the database function
+# Wrappers are necessary to ensure the database functions are passed only the necessary information
+# as arguments
 def __get_database_function_wrapper(raw_func):
     database_function_wrapper_map = {DatabaseManager().exit:__exit_wrapper,
                                      DatabaseManager().use_db:__use_wrapper,
@@ -174,6 +185,9 @@ def __get_database_function_wrapper(raw_func):
                                      dbi.alter_table_add:__alter_table_add_wrapper}
     
     return database_function_wrapper_map.get(raw_func)
+
+# All of the database function wrappers. Each one of these strips **kwargs 
+# and only passes the relevant information to the actual database function
 
 def __exit_wrapper(fn):
     def new(*args, **kwargs):

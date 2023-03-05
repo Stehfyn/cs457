@@ -2,6 +2,9 @@ import os
 import configparser
 import threading
 
+# This is a decorator, a function that wraps another when used with the @ syntax
+# This is a decorator that ensures that only one function from database_impl.py can be used at a time
+# i.e. making these functions atomic and threadsafe
 _db_lock = threading.RLock()
 def threadsafe(fn):
     def new(*args, **kwargs):
@@ -13,6 +16,7 @@ def threadsafe(fn):
         return r
     return new
 
+# create a database with a variable length of dbnames
 @threadsafe
 def create_database(*dbnames: str) -> bool:
     for dbname in dbnames:
@@ -23,6 +27,7 @@ def create_database(*dbnames: str) -> bool:
         except FileExistsError:
             print(f"!Failed to create database {dbname} because it already exists.")
 
+# drop a database with a variable length of dbnames
 @threadsafe
 def drop_database(*dbnames: str) -> bool:
     for dbname in dbnames:
@@ -33,6 +38,8 @@ def drop_database(*dbnames: str) -> bool:
         except FileNotFoundError:
             print(f"!Failed to delete database {dbname} because it does not exist.")
 
+
+# create a table
 @threadsafe
 def create_table(dbname: str, tblname: str, **kwargs) -> bool:
     filepath = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/{dbname}")
@@ -51,6 +58,7 @@ def create_table(dbname: str, tblname: str, **kwargs) -> bool:
         print(f"!Failed to create table {tblname} because {dbname} does not exist.")
         return False
 
+# drop a table
 @threadsafe
 def drop_table(dbname: str, *tblnames) -> bool:
     filepath = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/{dbname}")
@@ -75,6 +83,7 @@ def drop_table(dbname: str, *tblnames) -> bool:
         print(f"!Failed to create table {tblname} because {dbname} does not exist.")
         return False
 
+# select from table right now only supports * functionality
 @threadsafe
 def select_from_table(dbname: str, tblname: str, *attributes):
     filepath = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/{dbname}")
@@ -92,6 +101,7 @@ def select_from_table(dbname: str, tblname: str, *attributes):
         if isinstance(e, KeyError):
             print(f"!Failed to query table {tblname} because it does not exist.")
 
+# alter a table through addition
 @threadsafe
 def alter_table_add(dbname: str, tblname: str, **kwargs) -> bool:
     filepath = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/{dbname}")
@@ -111,6 +121,7 @@ def alter_table_add(dbname: str, tblname: str, **kwargs) -> bool:
         print(f"!Failed to create table {tblname} because {dbname} does not exist.")
         return False
 
+# alter a table through attribute deletion, to be implemented
 @threadsafe
 def alter_table_drop(dbname: str, tblname: str, **kwargs):
     pass

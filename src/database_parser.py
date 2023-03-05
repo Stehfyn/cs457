@@ -26,6 +26,7 @@ class DatabaseFunction(Enum):
     TABLE_ALTER_ADD = 7
     TABLE_ALTER_DROP = 8
 
+# The argparse extension to further parse Table arguments
 class TableParser(argparse.Action):
     def __init__(self, option_strings, *args, **kwargs):
         super(TableParser, self).__init__(option_strings=option_strings, *args, **kwargs)
@@ -78,6 +79,10 @@ class TableParser(argparse.Action):
 
         return values_as_dict
 
+# The decorator to loop through some list of parsers and see which one fits
+# Each parser is aligned with some database function, and that's how we know what function to execute,
+# when it passes some parser in __parser_list
+
 def __psuedo_try_next_parser_on_fail(fn, __parser_list):
     def new(*args, **kwargs):
         parsers = __parser_list
@@ -99,6 +104,8 @@ def __psuedo_try_next_parser_on_fail(fn, __parser_list):
     return new
 
 
+# The following is the individual parsers defining the tokenization of each database function invocation
+# These parser definitions are straightforward.
 def __exit_parser():
     parser = argparse.ArgumentParser(exit_on_error=False)
     parser.add_mutually_exclusive_group()
@@ -174,6 +181,7 @@ def __alter_drop_parser():
     parser.add_argument("attributes", nargs=argparse.ONE_OR_MORE)
     return parser
 
+# The parser map that pairs a parser enum to the proper database parser
 def __get_parser_map():
     parser_map = {}
     parser_map.update({__DatabaseParser.EXIT_PARSER:__exit_parser()})
@@ -187,7 +195,13 @@ def __get_parser_map():
     parser_map.update({__DatabaseParser.ALTER_DROP_PARSER:__alter_drop_parser()})
     return parser_map
 
+# Where __get_parser_map is used, to initialize the __DatabaseFunctionParser decorator 
+# as __psuedo_try_next_parser_on_fail with __get_parser_map().values() as the __parser_list
+
 __DatabaseFunctionParser = partial(__psuedo_try_next_parser_on_fail, __parser_list=list(__get_parser_map().values()))
+
+# Initial input sanitization. It ignores inline comments, and does not enforce, but will still allow properly, ; terminated
+# commands.
 
 def __input_sanitizer(*args):
 
@@ -206,10 +220,17 @@ def __input_sanitizer(*args):
         while '' in args:
             args.remove('')
     return args
-    
+
+# Internal parser definition, where __DatabaseFunctionParser loops through all available parsers and returns the proper
+# Database function
+
 @__DatabaseFunctionParser
 def __parser(*args, **parser):
     return parser["parser"].parse_args(*args)
+
+# External database parse function, detects lines that begin with a comment,
+# and otherwise will execute the parse process and find the relevant database function
+# to return to database.py
 
 def parse(*args):
     args = __input_sanitizer(*args)
