@@ -1,7 +1,6 @@
 import argparse
 from enum import Enum
 from functools import partial
-import re
 
 class __DatabaseParser(Enum):
     COMMENT_PARSER = -1

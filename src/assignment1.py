@@ -1,6 +1,5 @@
 import database as db
 import psutil
-
 import sys
 
 def running_interactively():

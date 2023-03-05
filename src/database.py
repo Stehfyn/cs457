@@ -1,14 +1,11 @@
-import database_impl as dbi
-import database_parser as dbp
-import dearpygui.dearpygui as dpg
-import dearpygui.demo as demo
-from dearpygui_ext import logger
-import itertools
 import os
-import sys
 import io
 from contextlib import redirect_stdout
 import threading
+
+import database_impl as dbi
+import database_parser as dbp
+import dearpygui.dearpygui as dpg
 
 """Ensure object __calls__ are threadsafe to always return the same class instance"""
 _cls_lock = threading.Lock()
@@ -29,11 +26,9 @@ class DatabaseManager(metaclass=SingletonConstruction):
 
     def create_db(self, dbname):
         if dbname not in self.db_list:
-            # check if file exists
             self.db_list.append(dbname)
         else:
             raise Exception(dbname)
-
 
     def drop_db(self, dbname):
         if dbname in self.db_list:
@@ -59,21 +54,12 @@ class DatabaseGUI:
         self.output = ""
         self.setup_dpg()
         self.setup_window()
-        with dpg.font_registry():
-        # first argument ids the path to the .ttf or .otf file
-            default_font = dpg.add_font("MyriadPro-Light.ttf", 20)
-        dpg.bind_font(default_font)
-        demo.show_demo()
-        self.logger = logger.mvLogger()
-        pass
 
     def run(self):
         dpg.set_primary_window("Primary Window", True)
-
         while dpg.is_dearpygui_running():
             jobs = dpg.get_callback_queue() # retrieves and clears queue
             dpg.run_callbacks(jobs)
-
             dpg.render_dearpygui_frame()
 
     def __enter__(self):
@@ -84,8 +70,9 @@ class DatabaseGUI:
     
     def setup_dpg(self):
         dpg.create_context()
-        dpg.create_viewport(title='Database', width=1000, height=800)
+        dpg.create_viewport(title='Database', width=600, height=200)
         self.set_icon()
+        self.set_font()
         dpg.setup_dearpygui()
         dpg.show_viewport()
 
@@ -94,14 +81,16 @@ class DatabaseGUI:
         with dpg.group(horizontal=True):
             dpg.add_input_text(tag="input", default_value="", callback=self.__input_callback)
             dpg.add_button(label="parse", callback=self.__parse_callback)
+            dpg.add_button(label="clear", callback=self.__clear_callback)
         dpg.add_text(tag="output",default_value="", wrap=-1, color=(255,0,0,255))
-        #self.setup_input_menu()
-        #self.setup_plot_view()
-
         dpg.pop_container_stack()
         
-        #self.setup_file_dialog()
     
+    def set_font(self):
+        with dpg.font_registry():
+            default_font = dpg.add_font("MyriadPro-Light.ttf", 20)
+        dpg.bind_font(default_font)
+
     def set_icon(self):
         dpg.set_viewport_small_icon("unr-256x256.ico")
         dpg.set_viewport_large_icon("unr-256x256.ico")
@@ -114,10 +103,13 @@ class DatabaseGUI:
             function_id, args = parse_command(self.input)
             execute_function(function_id, args)
             self.output += buf.getvalue()
-            self.logger.log_info(buf.getvalue())
         dpg.configure_item("output", default_value=self.output)
         self.input = ""
         dpg.configure_item("input", default_value=self.input)
+    
+    def __clear_callback(self, sender, user_data):
+        self.output = ""
+        dpg.configure_item("output", default_value=self.output)
     
 def interpreter():
     db = DatabaseManager()

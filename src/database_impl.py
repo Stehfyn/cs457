@@ -22,7 +22,7 @@ def create_database(*dbnames: str) -> bool:
                 print(f"Database {dbname} created.")
         except FileExistsError:
             print(f"!Failed to create database {dbname} because it already exists.")
-    
+
 @threadsafe
 def drop_database(*dbnames: str) -> bool:
     for dbname in dbnames:
@@ -32,7 +32,7 @@ def drop_database(*dbnames: str) -> bool:
             print(f"Database {dbname} deleted.")
         except FileNotFoundError:
             print(f"!Failed to delete database {dbname} because it does not exist.")
-    
+
 @threadsafe
 def create_table(dbname: str, tblname: str, **kwargs) -> bool:
     filepath = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/{dbname}")
@@ -83,7 +83,7 @@ def select_from_table(dbname: str, tblname: str, *attributes):
     try:
         if attributes[0] == '*':
             table = []
-            for key, value in dict(db)[tblname].items():
+            for key, value in dict(db).get(tblname).items():
                 table.append(f"{key} {value}")
             output = " | ".join(table)
             print(f"{output}")
