@@ -73,8 +73,8 @@ class DatabaseGUI:
     def setup_dpg(self):
         dpg.create_context()
         dpg.create_viewport(title='Database', width=600, height=200)
-        #self.set_icon()
-        #self.set_font()
+        self.set_icon()
+        self.set_font()
         dpg.setup_dearpygui()
         dpg.show_viewport()
 
