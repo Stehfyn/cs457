@@ -66,6 +66,7 @@ class DatabaseGUI:
         self.setup_dpg()
         self.setup_window()
 
+    # app loop
     def run(self):
         dpg.set_primary_window("Primary Window", True)
         while dpg.is_dearpygui_running():
@@ -87,6 +88,7 @@ class DatabaseGUI:
         dpg.setup_dearpygui()
         dpg.show_viewport()
 
+    # widget declarations
     def setup_window(self):
         dpg.push_container_stack(dpg.add_window(tag="Primary Window"))
         with dpg.group(horizontal=True):
@@ -111,6 +113,7 @@ class DatabaseGUI:
     def __input_callback(self, sender, user_data):
         self.input = user_data
 
+    # parse button, redirect stdout to capture output
     def __parse_callback(self, sender, user_data):
         with io.StringIO() as buf, redirect_stdout(buf):
             function_id, args = parse_command(self.input)
@@ -120,6 +123,7 @@ class DatabaseGUI:
         self.input = ""
         dpg.configure_item("input", default_value=self.input)
     
+    # clear button, clear output string and reset text in window
     def __clear_callback(self, sender, user_data):
         self.output = ""
         dpg.configure_item("output", default_value=self.output)

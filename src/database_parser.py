@@ -216,8 +216,11 @@ __DatabaseFunctionParser = partial(__psuedo_try_next_parser_on_fail, __parser_li
 
 def __input_sanitizer(*args):
 
-    # Don't enforce instruction termination, but if it is, then remove terminator before parsing
+    # Not so fun args correction, join args to singular string, strip leading/trailing whitespace chars, split based off internal
+    # spaces, and only include the arg if it isn't an empty char
     args = [x for x in "".join(args).strip().split(" ") if x != '']
+    
+    # Don't enforce instruction termination, but if it is, then remove terminator before parsing
     if len(args) > 0:
         #First, look for comment
         for i, arg in enumerate(args):
