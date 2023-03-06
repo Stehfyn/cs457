@@ -1,3 +1,12 @@
+# @auth: Stephen Foster
+# @date: March 5th, 2023
+# @filename: assignment1.py
+# @purpose: The database program manager. This file contains the DatabaseManager
+# class and related functionality to keep track of which database is in use, as 
+# well as the implementations of the batch processor, interpreter, and graphical 
+# user interface. Additionally, this file implements the wrapper functions that 
+# “connect” the output of the database parser to the appropriate database function.
+
 import os
 import io
 from contextlib import redirect_stdout

@@ -1,3 +1,11 @@
+# @auth: Stephen Foster
+# @date: March 5th, 2023
+# @filename: assignment1.py
+# @purpose: The database parser that either accepts or rejects raw input as
+# valid database operation language. This parser both tokenizes arguments as 
+# well as ensures valid table syntax, then returns the output to database.py 
+# to connect to the proper database functionality in database_impl.py.
+
 import argparse
 from enum import Enum
 from functools import partial
@@ -70,10 +78,13 @@ class TableParser(argparse.Action):
         values_as_dict = {}
         keys = []
         vals = []
+
+        #alternating values are analogous to attribute, constraint, attribute, ...
         for i in range(0, len(values), 2):
             keys.append(values[i])
             vals.append(values[i+1])
 
+        #zip up attribute as key, constraint as value
         for i in range(len(keys)):
             values_as_dict.update({keys[i]:vals[i]})
 

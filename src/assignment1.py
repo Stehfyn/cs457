@@ -1,3 +1,10 @@
+# @auth: Stephen Foster
+# @date: March 5th, 2023
+# @filename: assignment1.py
+# @purpose: The database program entrypoint. Depending on how the program was
+# called (interactively, non-interactively, certain command-line arguments, etc.),
+# this file will execute the appropriate functionality found in database.py.
+
 import database as db
 import psutil
 import sys
