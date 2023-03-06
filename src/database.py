@@ -89,13 +89,15 @@ class DatabaseGUI:
         
     
     def set_font(self):
+        font = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/MyriadPro-Light.ttf")
         with dpg.font_registry():
-            default_font = dpg.add_font("MyriadPro-Light.ttf", 20)
+            default_font = dpg.add_font(font, 20)
         dpg.bind_font(default_font)
 
     def set_icon(self):
-        dpg.set_viewport_small_icon("unr-256x256.ico")
-        dpg.set_viewport_large_icon("unr-256x256.ico")
+        icon = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/unr-256x256.ico")
+        dpg.set_viewport_small_icon(icon)
+        dpg.set_viewport_large_icon(icon)
     
     def __input_callback(self, sender, user_data):
         self.input = user_data
