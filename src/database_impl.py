@@ -1,6 +1,6 @@
 # @auth: Stephen Foster
 # @date: March 5th, 2023
-# @filename: assignment1.py
+# @filename: database_impl.py
 # @purpose: The database function implementations. Functions for creating 
 # databases, dropping databases, creating tables, dropping tables, etc. exist 
 # here. These are the database functions that database.py connect with output 

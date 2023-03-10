@@ -1,6 +1,6 @@
 # @auth: Stephen Foster
 # @date: March 5th, 2023
-# @filename: assignment1.py
+# @filename: database_parser.py
 # @purpose: The database parser that either accepts or rejects raw input as
 # valid database operation language. This parser both tokenizes arguments as 
 # well as ensures valid table syntax, then returns the output to database.py 

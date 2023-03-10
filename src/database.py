@@ -1,6 +1,6 @@
 # @auth: Stephen Foster
 # @date: March 5th, 2023
-# @filename: assignment1.py
+# @filename: database.py
 # @purpose: The database program manager. This file contains the DatabaseManager
 # class and related functionality to keep track of which database is in use, as 
 # well as the implementations of the batch processor, interpreter, and graphical 
