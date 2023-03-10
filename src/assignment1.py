@@ -21,8 +21,7 @@ def main(argc, argv):
     elif argc == 1 and running_interactively():
         db.interpreter()
 
-    elif (argc == 1 and not running_interactively()) 
-        or (argc == 2 and argv[1].lower() =='gui'):
+    elif (argc == 1 and not running_interactively()) or (argc == 2 and argv[1].lower() =='gui'):
         db.gui()
 
     elif argc >= 2:
