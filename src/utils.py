@@ -6,7 +6,7 @@ import tempfile
 
 def stdin_has_input() -> bool:
     if os.name == "nt":
-        import mscrt
+        import msvcrt
         return msvcrt.kbhit()
 
     elif os.name == "posix":
