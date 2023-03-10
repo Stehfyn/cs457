@@ -6,22 +6,28 @@
 # this file will execute the appropriate functionality found in database.py.
 
 import database as db
-import psutil
+
+from utils import stdin_has_input
+from utils import redirect_stdin_to_tempfile
+from utils import running_interactively
+
 import sys
 
-def running_interactively():
-    """Return True if any of our parent processes is a known shell."""
-    shells = {"cmd.exe", "bash", "powershell.exe", "WindowsTerminal.exe", "gnome-terminal"}
-    parent_names = {parent.name() for parent in psutil.Process().parents()}
-    return bool(shells & parent_names)
-
 def main(argc, argv):
-    if argc == 1 and running_interactively():
+    if stdin_has_input():
+        tmp = redirect_stdin_to_tempfile()
+        db.batch_processor([tmp.name])
+
+    elif argc == 1 and running_interactively():
         db.interpreter()
-    elif (argc == 1 and not running_interactively()) or argc == 2 and argv[1].lower() =='gui':
+
+    elif (argc == 1 and not running_interactively()) 
+        or (argc == 2 and argv[1].lower() =='gui'):
         db.gui()
+
     elif argc >= 2:
         db.batch_processor(argv[1:])
+
     else:
         raise Exception("Call Error")
 
