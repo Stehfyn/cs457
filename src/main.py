@@ -21,15 +21,12 @@ def main(argc, argv):
         os.unlink(tmp.name)
 
     elif argc == 1 and running_interactively():
-        print("interpreter")
         db.interpreter()
 
     elif (argc == 1 and not running_interactively()) or (argc == 2 and argv[1].lower() =='gui'):
-        print("gui")
         db.gui()
 
     elif argc >= 2:
-        print("batch processor file")
         db.batch_processor(argv[1:])
 
     else:
