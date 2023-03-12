@@ -1,28 +1,24 @@
+from enum import Enum
 import os
 import psutil
-import select
+import stat
 import sys
 import tempfile
-import multiprocessing
 
-def __peek_stdin():
-    return sys.stdin.read(0)
+class Mode(Enum):
+    PIPED = 0
+    REDIRECTED = 1
+    TERMINAL = 3
 
-def stdin_has_input() -> bool:
-    if os.name == "nt":
-        t = multiprocessing.Process(target=__peek_stdin, args=())
-        t.start()
-        t.join(1.0)
-        
-        if t.is_alive():
-            t.terminate()
-            return False
-        else:
-            return True
-
-    elif os.name == "posix":
-        return select.select([sys.stdin,],[],[],0.0)[0]
-
+def get_mode(fd):
+    mode = os.fstat(fd).st_mode
+    if stat.S_ISFIFO(mode):
+        return Mode.PIPED
+    elif stat.S_ISREG(mode):
+        return Mode.REDIRECTED
+    else:
+        return Mode.TERMINAL
+    
 def redirect_stdin_to_tempfile() -> tempfile:
     tmp = tempfile.NamedTemporaryFile(delete=False)
     tmp.close()
@@ -36,3 +32,14 @@ def running_interactively() -> bool:
     shells = {"cmd.exe", "bash", "powershell.exe", "WindowsTerminal.exe", "gnome-terminal"}
     parent_names = {parent.name() for parent in psutil.Process().parents()}
     return bool(shells & parent_names)
+
+if os.name == "nt":
+    import pywintypes
+    import win32gui
+    def __hide_console_handler(hwnd, lParam):
+        if win32gui.IsWindowVisible(hwnd):
+            if os.getcwd()+"\main.exe" in win32gui.GetWindowText(hwnd):
+                win32gui.MoveWindow(hwnd, -10000, -10000, 0, 0, True)
+
+    def hide_console():
+        win32gui.EnumWindows(__hide_console_handler, None)

@@ -1,13 +1,14 @@
 # @auth: Stephen Foster
 # @date: March 5th, 2023
-# @filename: assignment1.py
+# @filename: main.py
 # @purpose: The database program entrypoint. Depending on how the program was
 # called (interactively, non-interactively, certain command-line arguments, etc.),
 # this file will execute the appropriate functionality found in database.py.
 
 import database as db
 
-from utils import stdin_has_input
+from utils import Mode
+from utils import get_mode
 from utils import redirect_stdin_to_tempfile
 from utils import running_interactively
 
@@ -15,11 +16,11 @@ import os
 import sys
 
 def main(argc, argv):
-    if stdin_has_input():
+    if argc == 1 and (get_mode(sys.stdin.fileno()) == Mode.REDIRECTED):
         tmp = redirect_stdin_to_tempfile()
         db.batch_processor([tmp.name])
         os.unlink(tmp.name)
-
+    
     elif argc == 1 and running_interactively():
         db.interpreter()
 
