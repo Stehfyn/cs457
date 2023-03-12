@@ -6,7 +6,10 @@ from embedded import *
 class EmbeddedResource:
 
     __resources = {
+        "unr-256x256.png":UNR_256X256_PNG,
         "unr-256x256.ico":UNR_256X256_ICO,
+        "UniversityLogo RGB_block_n_blue.png":UNIVERSITYLOGO_RGB_BLOCK_N_BLUE_PNG,
+        "UniversityLogo RGB_block_n_blue.ico":UNIVERSITYLOGO_RGB_BLOCK_N_BLUE_ICO,
         "MyriadPro-Light.ttf":MYRIADPRO_LIGHT_TTF,
     }
 
@@ -87,7 +90,7 @@ class EmbeddedResource:
     
     @staticmethod
     def __sanitize_resource_key(to_embed):
-        return to_embed.replace("-", "_").replace(".", "_").upper()
+        return to_embed.replace("-", "_").replace(".", "_").replace(" ", "_").upper()
     
     @staticmethod
     def __encode_resource_to_str(to_embed_path, as_python_str=False):

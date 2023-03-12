@@ -110,7 +110,7 @@ class DatabaseGUI:
 
     def set_icon(self):
         #icon = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/unr-256x256.ico")
-        with EmbeddedResource("unr-256x256.ico") as icon:
+        with EmbeddedResource("UniversityLogo RGB_block_n_blue.ico") as icon:
             dpg.set_viewport_small_icon(icon)
             dpg.set_viewport_large_icon(icon)
     
