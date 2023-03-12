@@ -23,10 +23,10 @@ def embed_resources(here, resources):
     return embed.returncode
 
 @throw_on_fail
-def build_exe(here, icon_path):
+def build_exe(here, exe_name, icon_path):
     root = os.path.dirname(here)
     rel_path_to_main = os.path.relpath(os.path.realpath(root + "/src/main.py"), root)
-    args = ["pyinstaller", "--onefile", "--clean", f"--icon={icon_path}", f"{rel_path_to_main}"]
+    args = ["pyinstaller", "--onefile", "--clean", f"--name={exe_name}", f"--icon={icon_path}", f"{rel_path_to_main}"]
     build = subprocess.run(args, cwd=root)
     return build.returncode
 
@@ -43,7 +43,9 @@ def main(argc, argv):
                 icon_path = res
         
         embed_resources(here, resources)
-        return build_exe(here, icon_path)
+
+        exe_name = "database"
+        return build_exe(here, exe_name, icon_path)
 
     else:
         raise Exception("Call Error")
