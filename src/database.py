@@ -16,6 +16,8 @@ import database_impl as dbi
 import database_parser as dbp
 import dearpygui.dearpygui as dpg
 
+from embed import EmbeddedResource
+
 """Ensure object __calls__ are threadsafe to always return the same class instance"""
 _cls_lock = threading.Lock()
 class SingletonConstruction(type):
@@ -100,15 +102,17 @@ class DatabaseGUI:
         
     
     def set_font(self):
-        font = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/MyriadPro-Light.ttf")
-        with dpg.font_registry():
-            default_font = dpg.add_font(font, 20)
-        dpg.bind_font(default_font)
+        #font = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/MyriadPro-Light.ttf")
+        with EmbeddedResource("MyriadPro-Light.ttf") as font:
+            with dpg.font_registry():
+                default_font = dpg.add_font(font, 20)
+            dpg.bind_font(default_font)
 
     def set_icon(self):
-        icon = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/unr-256x256.ico")
-        dpg.set_viewport_small_icon(icon)
-        dpg.set_viewport_large_icon(icon)
+        #icon = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/unr-256x256.ico")
+        with EmbeddedResource("unr-256x256.ico") as icon:
+            dpg.set_viewport_small_icon(icon)
+            dpg.set_viewport_large_icon(icon)
     
     def __input_callback(self, sender, user_data):
         self.input = user_data
@@ -157,7 +161,9 @@ def batch_processor(argv):
                     if line != '':
                         function_id, args = parse_command(line)
                         execute_function(function_id, args)
-    except:
+                        
+    except Exception as e:
+        print(e)
         pass
 
 # The function that does argument passthrough to the database_parser

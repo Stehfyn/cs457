@@ -248,6 +248,7 @@ def __parser(*args, **parser):
 
 def parse(*args):
     args = __input_sanitizer(*args)
+
     if not args[0].startswith("--"):
         database_function, parsed = __parser(args)
         return database_function, parsed
