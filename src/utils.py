@@ -5,19 +5,19 @@ import stat
 import sys
 import tempfile
 
-class Mode(Enum):
+class FileMode(Enum):
     PIPED = 0
     REDIRECTED = 1
-    TERMINAL = 3
+    TERMINAL = 2
 
 def get_mode(fd):
     mode = os.fstat(fd).st_mode
     if stat.S_ISFIFO(mode):
-        return Mode.PIPED
+        return FileMode.PIPED
     elif stat.S_ISREG(mode):
-        return Mode.REDIRECTED
+        return FileMode.REDIRECTED
     else:
-        return Mode.TERMINAL
+        return FileMode.TERMINAL
     
 def redirect_stdin_to_tempfile() -> tempfile:
     tmp = tempfile.NamedTemporaryFile(delete=False)

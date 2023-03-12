@@ -7,16 +7,13 @@
 
 import database as db
 
-from utils import Mode
-from utils import get_mode
-from utils import redirect_stdin_to_tempfile
-from utils import running_interactively
+from utils import *
 
 import os
 import sys
 
 def main(argc, argv):
-    if argc == 1 and (get_mode(sys.stdin.fileno()) == Mode.REDIRECTED):
+    if argc == 1 and (get_mode(sys.stdin.fileno()) == FileMode.REDIRECTED):
         tmp = redirect_stdin_to_tempfile()
         db.batch_processor([tmp.name])
         os.unlink(tmp.name)

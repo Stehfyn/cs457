@@ -10,11 +10,25 @@ class EmbeddedResource:
         "MyriadPro-Light.ttf":MYRIADPRO_LIGHT_TTF,
     }
 
-    @staticmethod
-    def clean_resources():
-        EmbeddedResource.__clear_embedded_file()
-        EmbeddedResource.__clear_embedded_resources()
+    def __init__(self, resource: str):
+        if resource in self.__resources.keys():
+            self.resource = resource
+        else:
+            raise Exception("Resource Not Found")
 
+    def __enter__(self) -> tempfile:
+        self.tmp = tempfile.NamedTemporaryFile(suffix=os.path.splitext(self.resource)[1], delete=False)
+        self.tmp.close()
+
+        with open(self.tmp.name, "wb") as file:
+            data = base64.b64decode(self.__resources.get(self.resource))
+            file.write(data)
+
+        return self.tmp.name
+
+    def __exit__(self, et, ev, etb):
+        return True
+    
     @staticmethod
     def embed_resources(resources):
         resource_dict, resource_lines = EmbeddedResource.__get_embedded_resources()
@@ -48,8 +62,70 @@ class EmbeddedResource:
             
         except Exception as e:
             print(e)
-            EmbeddedResource.clean_resources()
+            EmbeddedResource.clear_resources()
 
+    @staticmethod
+    def clear_resources():
+        EmbeddedResource.__clear_embedded_file()
+        EmbeddedResource.__clear_embedded_resources()
+
+    @staticmethod
+    def __get_embedded_resources():
+        embedded = EmbeddedResource.__get_embedded_resource_file()
+
+        resource_dict = {}
+        resource_lines = []
+
+        with open(embedded, "r") as embedded_resources:
+            lines = embedded_resources.readlines()
+            for i, line in enumerate(lines):
+                resource_key = line[:line.find("=")]
+                resource_dict.update({resource_key:i})
+            resource_lines = lines
+
+        return resource_dict, resource_lines
+    
+    @staticmethod
+    def __sanitize_resource_key(to_embed):
+        return to_embed.replace("-", "_").replace(".", "_").upper()
+    
+    @staticmethod
+    def __encode_resource_to_str(to_embed_path, as_python_str=False):
+        with open(to_embed_path, "rb") as file:
+            data = file.read()
+            encoded_data = base64.b64encode(data).decode()
+            return f"\"{encoded_data}\"" if as_python_str else encoded_data
+        
+    @staticmethod
+    def __write_new_resource_line(resource_key, to_embed_path):
+        return f"{resource_key}={EmbeddedResource.__encode_resource_to_str(to_embed_path, as_python_str=True)}\n"
+    
+    @staticmethod
+    def __replace_resource_line_with_new_resource(line, to_embed_path):
+        line = EmbeddedResource.__clear_resource_line(line)
+        line += f"{EmbeddedResource.__encode_resource_to_str(to_embed_path, as_python_str=True)}\n"
+        return line
+    
+    @staticmethod
+    def __clear_resource_line(line):
+        return line[:line.find('=') + 1]
+    
+    @staticmethod
+    def __get_embedded_resource_file():
+        return os.path.realpath(os.path.dirname(os.path.abspath(__file__))+"/embedded.py")
+    
+    @staticmethod
+    def __write_embedded_resource_file(resource_lines):
+        embedded = EmbeddedResource.__get_embedded_resource_file()
+        with open(embedded, "w") as target:
+            target.write("".join(resource_lines))
+    
+    @staticmethod
+    def __clear_embedded_file():
+        embedded = EmbeddedResource.__get_embedded_resource_file()
+        with open(embedded, "w") as target:
+            pass
+    
     @staticmethod
     def __update_embedded_resources(new_embeds):
         if len(new_embeds) > 0:
@@ -71,59 +147,6 @@ class EmbeddedResource:
 
             with open(os.path.abspath(__file__), 'w') as this:
                 this.write("".join(this_file_as_lines))
-
-    @staticmethod
-    def __write_embedded_resource_file(resource_lines):
-        embedded = EmbeddedResource.__get_embedded_resource_file()
-        with open(embedded, "w") as target:
-            target.write("".join(resource_lines))
-
-    @staticmethod
-    def __get_embedded_resource_file():
-        return os.path.realpath(os.path.dirname(os.path.abspath(__file__))+"/embedded.py")
-
-    @staticmethod
-    def __write_new_resource_line(resource_key, to_embed_path):
-        return f"{resource_key}={EmbeddedResource.__encode_resource_to_str(to_embed_path, as_python_str=True)}\n"
-    
-    @staticmethod
-    def __clear_resource_line(line):
-        return line[:line.find('=') + 1]
-    
-    @staticmethod
-    def __replace_resource_line_with_new_resource(line, to_embed_path):
-        line = EmbeddedResource.__clear_resource_line(line)
-        line += EmbeddedResource.__encode_resource_to_str(to_embed_path, as_python_str=True)
-        line += '\n'
-        return line
-
-    @staticmethod
-    def __encode_resource_to_str(to_embed_path, as_python_str=False):
-        with open(to_embed_path, "rb") as file:
-            data = file.read()
-            encoded_data = base64.b64encode(data).decode()
-            return f"\"{encoded_data}\"" if as_python_str else encoded_data
-
-    @staticmethod
-    def __sanitize_resource_key(to_embed):
-        sanitized = to_embed.replace("-", "_").replace(".", "_").upper()
-        return sanitized
-    
-    @staticmethod
-    def __get_embedded_resources():
-        embedded = EmbeddedResource.__get_embedded_resource_file()
-
-        resource_dict = {}
-        resource_lines = []
-
-        with open(embedded, "r") as embedded_resources:
-            lines = embedded_resources.readlines()
-            for i, line in enumerate(lines):
-                resource_key = line[:line.find("=")]
-                resource_dict.update({resource_key:i})
-            resource_lines = lines
-
-        return resource_dict, resource_lines
     
     @staticmethod
     def __clear_embedded_resources():
@@ -147,29 +170,3 @@ class EmbeddedResource:
 
         with open(os.path.abspath(__file__), 'w') as this:
             this.write("".join(this_file_as_lines))
-
-    @staticmethod
-    def __clear_embedded_file():
-        embedded = EmbeddedResource.__get_embedded_resource_file()
-        with open(embedded, "w") as target:
-            pass
-
-    def __init__(self, resource: str):
-        if resource in self.__resources.keys():
-            self.resource = resource
-        else:
-            raise Exception("Resource Not Found")
-
-    def __enter__(self) -> tempfile:
-        self.tmp = tempfile.NamedTemporaryFile(suffix=os.path.splitext(self.resource)[1], delete=False)
-        self.tmp.close()
-
-        with open(self.tmp.name, "wb") as file:
-            data = base64.b64decode(self.__resources.get(self.resource))
-            file.write(data)
-
-        return self.tmp.name
-
-    def __exit__(self, et, ev, etb):
-        self.tmp.close()
-        return True

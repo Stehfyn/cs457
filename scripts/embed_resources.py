@@ -4,8 +4,8 @@ sys.path.append(os.path.abspath(os.path.realpath((os.path.dirname(os.path.dirnam
 from embed import EmbeddedResource
 
 def main(argc, argv):
-    if argc >= 2 and argv[1] == "clear":
-        EmbeddedResource.clean_resources()
+    if argc == 2 and argv[1] == "clear":
+        EmbeddedResource.clear_resources()
     elif argc >= 2:
         EmbeddedResource.embed_resources(argv[1:])
     else:
