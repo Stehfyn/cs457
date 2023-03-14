@@ -1,7 +1,7 @@
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.realpath((os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/src"))))
-from embed import EmbeddedResource
+
+from database.embed import EmbeddedResource
 
 def main(argc, argv):
     if argc == 2 and argv[1] == "clear":

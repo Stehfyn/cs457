@@ -18,7 +18,7 @@ def get_resources_to_embed(resource_path):
 
 @throw_on_fail
 def embed_resources(here, resources):
-    args = ["python3", "embed_resources.py"] + resources
+    args = [sys.executable, "embed_resources.py"] + resources
     embed = subprocess.run(args, cwd=here)
     return embed.returncode
 
