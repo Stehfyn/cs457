@@ -34,11 +34,15 @@ def bootstrap_venv(where):
     args = [venv_python, "-m", "pip", "install", "-r", requirements]
     install_deps = subprocess.run(args, cwd=where)
 
+    if os.name == "nt":
+        args = [venv_python, "-m", "pip", "install", "pypiwin32"]
+        install_pypiwin32 = subprocess.run(args,cwd=where)
+
     deactivate_script = os.path.realpath(where + "/venv/Scripts/deactivate" + extension)
     args = [deactivate_script]
     deact_venv = subprocess.run(args, cwd=where)
 
-    return act_venv + install_deps + deact_venv
+    return act_venv.returncode + install_deps.returncode + deact_venv.returncode
 
 def main(argc, argv):
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
