@@ -1,3 +1,5 @@
+![Tests](https://github.com/Stehfyn/cs457/actions/workflows/release.yml/badge.svg)
+
 ## Install
 
 First, clone the repository:
