@@ -1,20 +1,33 @@
 ![Tests](https://github.com/Stehfyn/cs457/actions/workflows/release.yml/badge.svg)
 
+## Requirements
+- [Python 3.9+](https://www.python.org/downloads/release/python-390/)
+
 ## Install
 
-First, clone the repository:
-```batch
-git clone https://github.com/stehfyn/cs457.git
+First, clone the repository and cd into `cs457`:
+```
+git clone https://github.com/stehfyn/cs457.git && cd cs457
 ```
 
-Then, we install the project dependencies:
+Then, we run `bootstrap.py` to ensure pip, install virtualenv if necessary, and setup the virtualenv:
 
-### Ubuntu
-```bash
-./install-requirements.sh
+```
+<python> ./scripts/bootstrap.py
 ```
 
-Finally, run the program:
-```batch
-python3.9 src/assignment1.py
+Next, we activate `virtualenv` depending on system:
+
 ```
+./venv/Scripts/activate.bat
+or
+./venv/Scripts/activate
+```
+
+Finally, one can run:
+```
+<python> ./src/main.py gui
+```
+and should see:
+
+![](common/gui.png?raw=true)
