@@ -13,7 +13,7 @@ def install_virtualenv(where):
     return venv.returncode
 
 def main(argc, argv):
-    root = os.path.dirname(os.path.abspath(__file__))
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     pip = ensure_pip(root)
     venv = install_virtualenv(root)
     return 0 if (pip + venv) == 0 else 1
