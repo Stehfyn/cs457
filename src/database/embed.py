@@ -1,7 +1,7 @@
 import base64
 import os
 import tempfile
-from embedded import *
+from database.embedded import *
 
 class EmbeddedResource:
 
@@ -19,12 +19,13 @@ class EmbeddedResource:
         else:
             raise Exception("Resource Not Found")
 
-    def __enter__(self) -> tempfile:
+    def __enter__(self):
         self.tmp = tempfile.NamedTemporaryFile(suffix=os.path.splitext(self.resource)[1], delete=False)
         self.tmp.close()
 
         with open(self.tmp.name, "wb") as file:
-            data = base64.b64decode(self.__resources.get(self.resource))
+            encoded = self.__resources.get(self.resource)
+            data = base64.b64decode(encoded)
             file.write(data)
 
         return self.tmp.name

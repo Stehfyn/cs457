@@ -12,11 +12,11 @@ import io
 from contextlib import redirect_stdout
 import threading
 
-import database_impl as dbi
-import database_parser as dbp
+import database.database_impl as dbi
+import database.database_parser as dbp
 import dearpygui.dearpygui as dpg
 
-from embed import EmbeddedResource
+from database.embed import EmbeddedResource
 
 """Ensure object __calls__ are threadsafe to always return the same class instance"""
 _cls_lock = threading.Lock()

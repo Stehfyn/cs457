@@ -5,7 +5,7 @@
 # called (interactively, non-interactively, certain command-line arguments, etc.),
 # this file will execute the appropriate functionality found in database.py.
 
-import database as db
+import database.database as db
 
 from utils import *
 

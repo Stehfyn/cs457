@@ -1,2 +1,2 @@
-dearpygui
-psutil
+dearpygui==1.8.0
+psutil==5.9.0

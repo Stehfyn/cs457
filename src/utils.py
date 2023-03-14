@@ -19,7 +19,7 @@ def get_mode(fd):
     else:
         return FileMode.TERMINAL
     
-def redirect_stdin_to_tempfile() -> tempfile:
+def redirect_stdin_to_tempfile():
     tmp = tempfile.NamedTemporaryFile(delete=False)
     tmp.close()
     with open(tmp.name, "w") as file:

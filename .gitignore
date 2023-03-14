@@ -1,6 +1,7 @@
 # general things to ignore
 build/
 dist/
+venv/
 *.egg-info/
 *.egg
 *.py[cod]
@@ -8,3 +9,4 @@ __pycache__/
 *.so
 *~
 *.spec
+*.coverage
