@@ -12,13 +12,18 @@ class EmbeddedResource:
         "UniversityLogo RGB_block_n_blue.ico":UNIVERSITYLOGO_RGB_BLOCK_N_BLUE_ICO,
         "MyriadPro-Light.ttf":MYRIADPRO_LIGHT_TTF,
     }
+    __delete_on_exit = True
 
-    def __init__(self, resource: str):
+    def __init__(self, resource: str, delete_on_exit=True):
         if resource in self.__resources.keys():
             self.resource = resource
+            self.__delete_on_exit = delete_on_exit
         else:
             raise Exception("Resource Not Found")
-
+        
+    def __call__( self, **kwargs ):
+        return self
+    
     def __enter__(self):
         self.tmp = tempfile.NamedTemporaryFile(suffix=os.path.splitext(self.resource)[1], delete=False)
         self.tmp.close()
@@ -31,6 +36,8 @@ class EmbeddedResource:
         return self.tmp.name
 
     def __exit__(self, et, ev, etb):
+        if self.__delete_on_exit:
+            os.remove(self.tmp.name)
         return True
     
     @staticmethod
