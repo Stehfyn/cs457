@@ -12,7 +12,6 @@ class EmbeddedResource:
         "UniversityLogo RGB_block_n_blue.ico":UNIVERSITYLOGO_RGB_BLOCK_N_BLUE_ICO,
         "MyriadPro-Light.ttf":MYRIADPRO_LIGHT_TTF,
     }
-    __delete_on_exit = True
 
     def __init__(self, resource: str, delete_on_exit=True):
         if resource in self.__resources.keys():
@@ -57,7 +56,6 @@ class EmbeddedResource:
 
                 resource_key = EmbeddedResource.__sanitize_resource_key(to_embed)
 
-                line = ""
                 if resource_dict.get(resource_key) != None:
                     line = resource_lines[resource_dict.get(resource_key)]
                     line = EmbeddedResource.__replace_resource_line_with_new_resource(line, to_embed_path)
