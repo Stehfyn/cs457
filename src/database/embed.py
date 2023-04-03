@@ -6,11 +6,18 @@ from database.embedded import *
 class EmbeddedResource:
 
     __resources = {
+        "UNR.xcf":UNR_XCF,
+        "UNR-inactive.png":UNR_INACTIVE_PNG,
+        "UNR-active.png":UNR_ACTIVE_PNG,
         "unr-256x256.png":UNR_256X256_PNG,
         "unr-256x256.ico":UNR_256X256_ICO,
         "UniversityLogo RGB_block_n_blue.png":UNIVERSITYLOGO_RGB_BLOCK_N_BLUE_PNG,
         "UniversityLogo RGB_block_n_blue.ico":UNIVERSITYLOGO_RGB_BLOCK_N_BLUE_ICO,
         "MyriadPro-Light.ttf":MYRIADPRO_LIGHT_TTF,
+        "close.xcf":CLOSE_XCF,
+        "close.png":CLOSE_PNG,
+        "UNR-inactive.ico":UNR_INACTIVE_ICO,
+        "UNR-active.ico":UNR_ACTIVE_ICO,
     }
 
     def __init__(self, resource: str, delete_on_exit=True):
@@ -42,12 +49,11 @@ class EmbeddedResource:
     @staticmethod
     def embed_resources(resources):
         resource_dict, resource_lines = EmbeddedResource.__get_embedded_resources()
-
         new_embeds = []
         
         try:
             for to_embed in resources:
-                
+                print(f"Embedding {to_embed} ...")
                 to_embed_path = os.path.abspath(to_embed)
                 to_embed = os.path.basename(to_embed_path)
 
