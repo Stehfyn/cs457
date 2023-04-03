@@ -9,6 +9,7 @@
 
 import os
 import io
+import logging
 from contextlib import redirect_stdout
 import threading
 
@@ -74,6 +75,11 @@ class DatabaseGUI:
         while dpg.is_dearpygui_running():
             jobs = dpg.get_callback_queue() # retrieves and clears queue
             dpg.run_callbacks(jobs)
+
+            if dpg.is_key_pressed(dpg.mvKey_Return):
+                self.__parse_callback("", "")
+            
+
             dpg.render_dearpygui_frame()
 
     def __enter__(self):
@@ -98,6 +104,9 @@ class DatabaseGUI:
             dpg.add_button(label="parse", callback=self.__parse_callback)
             dpg.add_button(label="clear", callback=self.__clear_callback)
         dpg.add_text(tag="output",default_value="", wrap=-1, color=(255,0,0,255))
+        #dpg.add_slider_float(label="width",min_value=10, max_value=100, default_value=50, callback=lambda s, ud: dpg.configure_item("child1", width=ud))
+        #dpg.add_child_window(label="child", tag="child1")
+
         dpg.pop_container_stack()
         
     
@@ -111,6 +120,7 @@ class DatabaseGUI:
     def set_icon(self):
         #icon = os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + f"/unr-256x256.ico")
         with EmbeddedResource("UniversityLogo RGB_block_n_blue.ico", delete_on_exit=False) as icon:
+        #with EmbeddedResource("UNR-active.ico", delete_on_exit=False) as icon:
             dpg.set_viewport_small_icon(icon)
             dpg.set_viewport_large_icon(icon)
     
@@ -119,10 +129,14 @@ class DatabaseGUI:
 
     # parse button, redirect stdout to capture output
     def __parse_callback(self, sender, user_data):
-        with io.StringIO() as buf, redirect_stdout(buf):
-            function_id, args = parse_command(self.input)
-            execute_function(function_id, args)
-            self.output += buf.getvalue()
+        try:
+            with io.StringIO() as buf, redirect_stdout(buf):
+                function_id, args = parse_command(self.input)
+                execute_function(function_id, args)
+                self.output += buf.getvalue()
+        except:
+            logging.exception("Parsing or Execution Error!")
+
         dpg.configure_item("output", default_value=self.output)
         self.input = ""
         dpg.configure_item("input", default_value=self.input)
