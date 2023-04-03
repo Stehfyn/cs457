@@ -63,7 +63,7 @@ def bootstrap_venv(where):
         deact_venv = subprocess.run(args, cwd=where)
         deact_code = deact_venv.returncode
 
-    return act_venv.returncode + install_deps.returncode + deact_code.returncode
+    return act_code + install_deps.returncode + deact_code
 
 def main(argc, argv):
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
