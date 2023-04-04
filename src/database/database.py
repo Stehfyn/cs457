@@ -37,6 +37,16 @@ class DatabaseManager(metaclass=SingletonConstruction):
         self.db_in_use = ""
         self.db_list = []
 
+        self.target_table = ""
+        self.selected_table = ""
+        self.target_table_delete = ""
+
+        self.selected_attributes = []
+
+        self.target_new_attributes = {}
+        self.target_attribute_condition = {}
+
+
     def create_db(self, dbname):
         if dbname not in self.db_list:
             self.db_list.append(dbname)
@@ -56,6 +66,24 @@ class DatabaseManager(metaclass=SingletonConstruction):
 
     def get_db_in_use(self):
         return self.db_in_use
+    
+    def set_target_table(self, target):
+        self.target_table = target
+    
+    def set_target_table_delete(self, target):
+        self.target_table_delete = target
+    
+    def set_target_new_attributes(self, new_attributes):
+        self.target_new_attributes = new_attributes
+
+    def set_target_attribute_condition(self, condition):
+        self.target_attribute_condition = condition
+
+    def set_selected_table(self, selected):
+        self.selected_table = selected
+    
+    def set_selected_attributes(self, attributes):
+        self.selected_attributes = attributes
     
     def exit(self, *args, **kwargs):
         print("All done.")
@@ -178,7 +206,6 @@ def batch_processor(argv):
                         
     except Exception as e:
         print(e)
-        pass
 
 # The function that does argument passthrough to the database_parser
 def parse_command(*args):
@@ -186,7 +213,7 @@ def parse_command(*args):
 
 # The high level function that grabs the proper database function to execute based off the parser return values
 def execute_function(id: dbp.DatabaseFunction, args):
-    if id != dbp.DatabaseFunction.COMMENT:
+    if (id != dbp.DatabaseFunction.COMMENT):
         func = __get_database_function(id)
         ret = func(**args)
 
@@ -199,6 +226,13 @@ def __get_database_function(id: dbp.DatabaseFunction):
                              dbp.DatabaseFunction.TABLE_CREATE:dbi.create_table,
                              dbp.DatabaseFunction.TABLE_DROP:dbi.drop_table,
                              dbp.DatabaseFunction.TABLE_SELECT:dbi.select_from_table,
+                             dbp.DatabaseFunction.TABLE_SELECT_ATTRIBUTE:DatabaseManager().set_selected_attributes,
+                             dbp.DatabaseFunction.TABLE_INSERT_ROW:dbi.insert_table_row,
+                             dbp.DatabaseFunction.TABLE_UPDATE_ROW:DatabaseManager().set_target_table,
+                             dbp.DatabaseFunction.TABLE_FROM:DatabaseManager().set_selected_table,
+                             dbp.DatabaseFunction.TABLE_SET_ATTRIBUTE:DatabaseManager().set_target_new_attributes,
+                             dbp.DatabaseFunction.TABLE_WHERE_ATTRIBUTE:DatabaseManager().set_target_attribute_condition,
+                             dbp.DatabaseFunction.TABLE_DELETE_ROW:DatabaseManager().set_target_table_delete,
                              dbp.DatabaseFunction.TABLE_ALTER_ADD:dbi.alter_table_add,
                              dbp.DatabaseFunction.TABLE_ALTER_DROP:dbi.alter_table_drop}
     
@@ -217,6 +251,13 @@ def __get_database_function_wrapper(raw_func):
                                      dbi.create_table:__create_table_wrapper,
                                      dbi.drop_table:__drop_table_wrapper,
                                      dbi.select_from_table:__select_from_table_wrapper,
+                                     DatabaseManager().set_selected_attributes:__select_attributes_from_table_wrapper,
+                                     dbi.insert_table_row:__insert_table_row_wrapper,
+                                     DatabaseManager().set_target_table:__update_table_wrapper,
+                                     DatabaseManager().set_selected_table:__set_selected_table_wrapper,
+                                     DatabaseManager().set_target_new_attributes:__set_attributes_new_wrapper,
+                                     DatabaseManager().set_target_attribute_condition:__set_attribute_condition_wrapper,
+                                     DatabaseManager().set_target_table_delete:__delete_row_wrapper,
                                      dbi.alter_table_add:__alter_table_add_wrapper}
     
     return database_function_wrapper_map.get(raw_func)
@@ -268,6 +309,7 @@ def __create_table_wrapper(fn):
     def new(**kwargs):
         try:
             tblname = kwargs.get("targets")[0]
+            tblname = tblname.capitalize()
             table = kwargs.get("table")
             f = fn(DatabaseManager().get_db_in_use(), tblname, **table)
         except Exception as e:
@@ -278,6 +320,7 @@ def __drop_table_wrapper(fn):
     def new(**kwargs):
         try:
             tblnames = kwargs.get("targets")
+            tblnames = [tblname.capitalize() for tblname in tblnames]
             f = fn(DatabaseManager().get_db_in_use(), *tblnames)
         except Exception as e:
             print(e)
@@ -286,9 +329,115 @@ def __drop_table_wrapper(fn):
 def __select_from_table_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0]
+            tblname = kwargs.get("targets")[0].capitalize()
             attributes = kwargs.get("value")
+            DatabaseManager().set_selected_table(tblname)
             f = fn(DatabaseManager().get_db_in_use(), tblname, *attributes)
+            DatabaseManager().set_selected_table("")
+        except Exception as e:
+            print(e)
+    return new
+
+def __select_attributes_from_table_wrapper(fn):
+    def new(**kwargs):
+        try:
+            attributes = kwargs.get("value")
+            f = fn(attributes)
+        except Exception as e:
+            print(e)
+    return new
+
+def __insert_table_row_wrapper(fn):
+    def new(**kwargs):
+        try:
+            tblname = kwargs.get("targets")[0].capitalize()
+            values = kwargs.get("values")
+            f = fn(DatabaseManager().get_db_in_use(), tblname, *values)
+            print("1 new record inserted.")
+
+        except Exception as e:
+            print(e)
+    return new
+
+def __update_table_wrapper(fn):
+    def new(**kwargs):
+        try:
+            tblname = kwargs.get("targets")[0].capitalize()
+            f = fn(tblname)
+
+        except Exception as e:
+            print(e)
+    return new
+
+def __set_selected_table_wrapper(fn):
+    def new(**kwargs):
+        try:
+            tblname = kwargs.get("targets")[0].capitalize()
+            f = fn(tblname)
+        except Exception as e:
+            print(e)
+    return new
+
+def __set_attributes_new_wrapper(fn):
+    def new(**kwargs):
+        try:
+            attributes = kwargs.get("targets")
+            f = fn(attributes)
+
+        except Exception as e:
+            print(e)
+    return new
+
+def __set_attribute_condition_wrapper(fn):
+    def new(**kwargs):
+        try:
+            attributes = kwargs.get("targets")
+            f = fn(kwargs)
+            
+            condition = list(attributes.items())[0][0] + attributes.get("__condition__") + list(attributes.items())[0][1]
+
+            if (DatabaseManager().target_table != "") and (DatabaseManager().target_new_attributes != {}):
+                items = list(DatabaseManager().target_new_attributes.items())
+                dbi.update_table(DatabaseManager().get_db_in_use(), 
+                                DatabaseManager().target_table,
+                                items[0][0],
+                                items[0][1],
+                                condition,
+                                attributes.get("__condition__"))
+            
+                DatabaseManager().set_target_table("")
+                DatabaseManager().set_target_new_attributes({})
+                DatabaseManager().set_target_attribute_condition("")
+
+
+            elif (DatabaseManager().selected_attributes != "") and (DatabaseManager().selected_table != ""):
+                dbi.select_from_table(DatabaseManager().get_db_in_use(), 
+                                      DatabaseManager().selected_table,
+                                      *DatabaseManager().selected_attributes,
+                                      row_cond=condition,
+                                      cond=attributes.get("__condition__"))
+                DatabaseManager().set_target_table("")
+                DatabaseManager().set_selected_table("")
+                DatabaseManager().set_selected_attributes("")
+            
+            else:
+                dbi.delete_table_row(DatabaseManager().get_db_in_use(), 
+                                DatabaseManager().target_table_delete,
+                                condition,
+                                attributes.get("__condition__"))
+                DatabaseManager().target_table_delete = ""
+
+        except Exception as e:
+            print(e)
+
+    return new
+
+def __delete_row_wrapper(fn):
+    def new(**kwargs):
+        try:
+            tblname = kwargs.get("targets")[0]
+            f = fn(tblname.capitalize())
+
         except Exception as e:
             print(e)
     return new
@@ -296,7 +445,7 @@ def __select_from_table_wrapper(fn):
 def __alter_table_add_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0]
+            tblname = kwargs.get("targets")[0].capitalize()
             table = kwargs.get("table")
             f = fn(DatabaseManager().get_db_in_use(), tblname, **table)
         except Exception as e:
@@ -306,7 +455,7 @@ def __alter_table_add_wrapper(fn):
 def __alter_table_drop_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0]
+            tblname = kwargs.get("targets")[0].capitalize()
             attributes = kwargs.get("value")
             f = fn(DatabaseManager().get_db_in_use(), tblname, *attributes)
         except Exception as e:
