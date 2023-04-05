@@ -47,6 +47,10 @@ def bootstrap_venv(where):
     args = [venv_python, "-m", "pip", "install", "-r", requirements]
     install_deps = subprocess.run(args, cwd=where)
 
+    dev_requirements = os.path.realpath(where + "/requirements_dev.txt")
+    args = [venv_python, "-m", "pip", "install", "-r", dev_requirements]
+    install_deps = subprocess.run(args, cwd=where)
+
     if os.name == "nt":
         args = [venv_python, "-m", "pip", "install", "pypiwin32"]
         install_pypiwin32 = subprocess.run(args,cwd=where)

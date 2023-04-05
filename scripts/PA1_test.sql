@@ -37,13 +37,12 @@ SELECT * FROM tbl_1;
 -- Table tbl_1 deleted.
 -- !Failed to delete tbl_1 because it does not exist.
 -- Table tbl_1 created.
--- a1 int | a2 varchar(20)
+-- a1 int|a2 varchar(20)
 -- Table tbl_1 modified.
--- a1 int | a2 varchar(20) | a3 float
+-- a1 int|a2 varchar(20)|a3 float
 -- Table tbl_2 created.
--- a3 float | a4 char(20)
--- Using Database db_2.
+-- a3 float|a4 char(20)
+-- Using database db_2.
 -- !Failed to query table tbl_1 because it does not exist.
 -- Table tbl_1 created.
--- a3 float | a4 char(20)
--- All done.
+-- a3 float|a4 char(20)

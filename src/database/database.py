@@ -10,6 +10,7 @@
 import os
 import io
 import logging
+from enum import Flag
 from contextlib import redirect_stdout
 import threading
 
@@ -30,6 +31,9 @@ class SingletonConstruction(type):
                 if cls not in cls._instances:
                     cls._instances[cls] = super(SingletonConstruction, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
+class DatabseManagerFlags(Flag):
+    CLEAN = (1 << 0) # Cleanup any created files after execution (Todo)
 
 # make DatabaseManager a singleton, the class that manages database state (use and .exit at the moment)
 class DatabaseManager(metaclass=SingletonConstruction):
@@ -309,7 +313,7 @@ def __create_table_wrapper(fn):
     def new(**kwargs):
         try:
             tblname = kwargs.get("targets")[0]
-            tblname = tblname.capitalize()
+            tblname = tblname.lower()
             table = kwargs.get("table")
             f = fn(DatabaseManager().get_db_in_use(), tblname, **table)
         except Exception as e:
@@ -320,7 +324,7 @@ def __drop_table_wrapper(fn):
     def new(**kwargs):
         try:
             tblnames = kwargs.get("targets")
-            tblnames = [tblname.capitalize() for tblname in tblnames]
+            tblnames = [tblname.lower() for tblname in tblnames]
             f = fn(DatabaseManager().get_db_in_use(), *tblnames)
         except Exception as e:
             print(e)
@@ -329,7 +333,7 @@ def __drop_table_wrapper(fn):
 def __select_from_table_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0].capitalize()
+            tblname = kwargs.get("targets")[0].lower()
             attributes = kwargs.get("value")
             DatabaseManager().set_selected_table(tblname)
             f = fn(DatabaseManager().get_db_in_use(), tblname, *attributes)
@@ -350,7 +354,7 @@ def __select_attributes_from_table_wrapper(fn):
 def __insert_table_row_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0].capitalize()
+            tblname = kwargs.get("targets")[0].lower()
             values = kwargs.get("values")
             f = fn(DatabaseManager().get_db_in_use(), tblname, *values)
             print("1 new record inserted.")
@@ -362,7 +366,7 @@ def __insert_table_row_wrapper(fn):
 def __update_table_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0].capitalize()
+            tblname = kwargs.get("targets")[0].lower()
             f = fn(tblname)
 
         except Exception as e:
@@ -372,7 +376,7 @@ def __update_table_wrapper(fn):
 def __set_selected_table_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0].capitalize()
+            tblname = kwargs.get("targets")[0].lower()
             f = fn(tblname)
         except Exception as e:
             print(e)
@@ -436,7 +440,7 @@ def __delete_row_wrapper(fn):
     def new(**kwargs):
         try:
             tblname = kwargs.get("targets")[0]
-            f = fn(tblname.capitalize())
+            f = fn(tblname.lower())
 
         except Exception as e:
             print(e)
@@ -445,7 +449,7 @@ def __delete_row_wrapper(fn):
 def __alter_table_add_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0].capitalize()
+            tblname = kwargs.get("targets")[0].lower()
             table = kwargs.get("table")
             f = fn(DatabaseManager().get_db_in_use(), tblname, **table)
         except Exception as e:
@@ -455,7 +459,7 @@ def __alter_table_add_wrapper(fn):
 def __alter_table_drop_wrapper(fn):
     def new(**kwargs):
         try:
-            tblname = kwargs.get("targets")[0].capitalize()
+            tblname = kwargs.get("targets")[0].lower()
             attributes = kwargs.get("value")
             f = fn(DatabaseManager().get_db_in_use(), tblname, *attributes)
         except Exception as e:

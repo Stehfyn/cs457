@@ -45,7 +45,7 @@ def drop_database(*dbnames: str) -> bool:
             os.remove(filepath)
             print(f"Database {dbname} deleted.")
         except FileNotFoundError:
-            print(f"!Failed to delete database {dbname} because it does not exist.")
+            print(f"!Failed to delete {dbname} because it does not exist.")
 
 
 # create a table

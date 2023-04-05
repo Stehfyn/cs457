@@ -34,13 +34,11 @@ select name, price
 from product 
 where pid != 2;
 
-.exit
-
 -- Expected output
 --
 -- Database CS457_PA2 created.
 -- Using database CS457_PA2.
--- Table Product created.
+-- Table product created.
 -- 1 new record inserted.
 -- 1 new record inserted.
 -- 1 new record inserted.
@@ -67,4 +65,3 @@ where pid != 2;
 -- 3|SingleTouch|149.99
 -- name varchar(20)|price float
 -- SingleTouch|149.99
--- All done.
