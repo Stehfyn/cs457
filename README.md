@@ -25,6 +25,7 @@ First, clone the repository and cd into `cs457`:
 git clone https://github.com/stehfyn/cs457.git && cd cs457
 ```
 
+### Windows
 Then, we run `bootstrap.py` to ensure pip, install virtualenv if necessary, and setup the virtualenv:
 
 ```
