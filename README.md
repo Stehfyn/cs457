@@ -10,6 +10,7 @@
 </h1>
 <span>
   <img src="https://github.com/Stehfyn/cs457/actions/workflows/release.yml/badge.svg" alt="Release">
+  <img src="https://github.com/Stehfyn/cs457/actions/workflows/assignments.yml/badge.svg" alt="Assignments">
 </span>
 
 ## Requirements
