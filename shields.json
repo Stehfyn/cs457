@@ -1,1 +1,1 @@
-{"time":{"label":"Updated at","status":"","color":"00EEFF"}}
+{"time":{"label":"Updated at","status":"$({{ steps.tox-tests.outputs }})","color":"00EEFF"}}
