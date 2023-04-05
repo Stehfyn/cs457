@@ -40,7 +40,6 @@ def get_expected_stdout(script):
     ]
 )
 
-
 def test_assignments(script, stdout):
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     test_script = os.path.realpath(root + "/scripts/" + script)
