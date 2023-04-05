@@ -8,10 +8,12 @@
     </div>
   </div>
 </h1>
-<span>
-  <img src="https://github.com/Stehfyn/cs457/actions/workflows/release.yml/badge.svg" alt="Release">
-  <img src="https://github.com/Stehfyn/cs457/actions/workflows/assignments.yml/badge.svg" alt="Assignments">
-</span>
+<div align="center">
+  <span>
+    <img src="https://github.com/Stehfyn/cs457/actions/workflows/release.yml/badge.svg" alt="Release">
+    <img src="https://github.com/Stehfyn/cs457/actions/workflows/assignments.yml/badge.svg" alt="Assignments">
+  </span>
+</div>
 
 ## Requirements
 - [Python 3.9+](https://www.python.org/downloads/release/python-390/)
