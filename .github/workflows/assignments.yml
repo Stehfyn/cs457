@@ -77,7 +77,7 @@ jobs:
         with:
           NAME: as1
           LABEL: 'Assignment1'
-          ICON: 'https://raw.githubusercontent.com/Stehfyn/cs457/resources/UNR-active.svg'
+          ICON: 'https://raw.githubusercontent.com/Stehfyn/cs457/main/resources/UNR-active.svg'
           STATUS: ${{ steps.status.outputs.as1 }}
           COLOR: ${{ steps.status.outputs.as1-color }}
           GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
@@ -87,7 +87,7 @@ jobs:
         with:
           NAME: as2
           LABEL: 'Assignment2'
-          ICON: 'https://raw.githubusercontent.com/Stehfyn/cs457/resources/UNR-active.svg'
+          ICON: 'https://raw.githubusercontent.com/Stehfyn/cs457/main/resources/UNR-active.svg'
           STATUS: ${{ steps.status.outputs.as2 }}
           COLOR: ${{ steps.status.outputs.as2-color }}
           GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
@@ -97,7 +97,7 @@ jobs:
         with:
           NAME: as3
           LABEL: 'Assignment3'
-          ICON: 'https://raw.githubusercontent.com/Stehfyn/cs457/resources/UNR-active.svg'
+          ICON: 'https://raw.githubusercontent.com/Stehfyn/cs457/main/resources/UNR-active.svg'
           STATUS: ${{ steps.status.outputs.as3 }}
           COLOR: ${{ steps.status.outputs.as3-color }}
           GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
