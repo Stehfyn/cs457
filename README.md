@@ -1,7 +1,3 @@
-![](https://byob.yarr.is/Stehfyn/cs457/as1/shields)
-![](https://byob.yarr.is/Stehfyn/cs457/as2/shields)
-![](https://byob.yarr.is/Stehfyn/cs457/as3/shields)
-
 <h1>
   <div style="display: inline-block">
     <span>
@@ -15,7 +11,9 @@
 <div align="center">
   <span>
     <img src="https://github.com/Stehfyn/cs457/actions/workflows/release.yml/badge.svg" alt="Release">
-    <img src="https://github.com/Stehfyn/cs457/actions/workflows/assignments.yml/badge.svg" alt="Assignments">
+    <img src="https://byob.yarr.is/Stehfyn/cs457/as1/shields" alt="Assignments">
+    <img src="https://byob.yarr.is/Stehfyn/cs457/as2/shields" alt="Assignments">
+    <img src="https://byob.yarr.is/Stehfyn/cs457/as3/shields" alt="Assignments">
   </span>
 </div>
 
