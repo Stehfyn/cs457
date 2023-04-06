@@ -36,7 +36,8 @@ def get_expected_stdout(script):
 @pytest.mark.parametrize("script, stdout", 
     [
         ("PA1_test.sql", pytest.lazy_fixture("capture_stdout")), 
-        ("PA2_test.sql", pytest.lazy_fixture("capture_stdout"))
+        ("PA2_test.sql", pytest.lazy_fixture("capture_stdout")),
+        ("PA3_test.sql", pytest.lazy_fixture("capture_stdout"))
     ]
 )
 
