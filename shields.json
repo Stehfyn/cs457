@@ -1,1 +1,1 @@
-{"time":{"label":"Updated at","status":"tests/test_database.py::test_assignments[PA1_test.sql-capture_stdout] PASSED [ 50%]","color":"00EEFF"},"as1":{"label":"as1","status":"PASSED","color":"36BE54"},"as2":{"label":"as2","status":"PASSED","color":"36BE54"}}
+{"time":{"label":"Updated at","status":"tests/test_database.py::test_assignments[PA1_test.sql-capture_stdout] PASSED [ 50%]","color":"00EEFF"},"as1":{"label":"Assignment1","status":"passing","color":"36BE54"},"as2":{"label":"as2","status":"PASSED","color":"36BE54"}}
