@@ -1,1 +1,1 @@
-{"time":{"label":"Updated at","status":"tests/test_database.py::test_assignments[PA1_test.sql-capture_stdout] PASSED [ 50%]","color":"00EEFF"},"as1":{"label":"Assignment1","status":"passing","color":"36BE54"},"as2":{"label":"Assignment2","status":"passing","color":"36BE54"}}
+{"as1":{"label":"Assignment1","status":"passing","color":"36BE54"},"as2":{"label":"Assignment2","status":"passing","color":"36BE54"}}
