@@ -1,1 +1,1 @@
-{"as1":{"label":"Assignment1","status":"passing","color":"36BE54"},"as2":{"label":"Assignment2","status":"passing","color":"36BE54"},"as3":{"label":"Assignment3","status":"failing","color":"CD333E"}}
+{"as1":{"label":"Assignment1","icon":"https://raw.githubusercontent.com/Stehfyn/cs457/resources/UNR-active.svg","status":"passing","color":"36BE54"},"as2":{"label":"Assignment2","status":"passing","color":"36BE54"},"as3":{"label":"Assignment3","status":"failing","color":"CD333E"}}
