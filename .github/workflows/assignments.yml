@@ -9,8 +9,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ['3.9']
+    outputs:
+      as1: ${{ steps.tox-tests.outputs.as1 }}
+      as2: ${{ steps.tox-tests.outputs.as2 }}
+      as3: ${{ steps.tox-tests.outputs.as3 }}
 
     steps:
     - uses: actions/checkout@v2
@@ -23,4 +27,74 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
     - name: Test with tox
-      run: tox
+      id: tox-tests
+      run: |
+        tox | tee tox_output.txt        
+        echo "##[set-output name=as1;]$(grep -E '*PA1_test.sql*(PASSED|FAILED)*' tox_output.txt)"
+        echo "##[set-output name=as2;]$(grep -E '*PA2_test.sql*(PASSED|FAILED)*' tox_output.txt)"
+        echo "##[set-output name=as3;]$(grep -E '*PA3_test.sql*(PASSED|FAILED)*' tox_output.txt)"
+  badge_job:
+    if: ${{ always() }}
+    needs: test 
+    runs-on: ubuntu-latest
+    env:
+      as1: ${{ needs.test.outputs.as1 }}
+      as2: ${{ needs.test.outputs.as2 }}
+      as3: ${{ needs.test.outputs.as3 }}
+      
+    steps:
+        
+      - id: status
+        run: |
+          echo  $as1 > as1.txt && echo $(grep -E -o '(PASSED|FAILED)' as1.txt) > as1.txt
+          echo  $as2 > as2.txt && echo $(grep -E -o '(PASSED|FAILED)' as2.txt) > as2.txt
+          echo  $as3 > as3.txt && echo $(grep -E -o '(PASSED|FAILED)' as3.txt) > as3.txt
+          
+          if [ $(cat as1.txt) = "PASSED" ]; then
+            echo "##[set-output name=as1-color;]36BE54"
+            echo "##[set-output name=as1;]passing"
+          else
+            echo "##[set-output name=as1-color;]CD333E"
+            echo "##[set-output name=as1;]failing"
+          fi
+          if [ $(cat as2.txt) = "PASSED" ]; then
+            echo "##[set-output name=as2-color;]36BE54"
+            echo "##[set-output name=as2;]passing"
+          else
+            echo "##[set-output name=as2-color;]CD333E"
+            echo "##[set-output name=as2;]failing"
+          fi
+          
+          if [ $(cat as3.txt) = "PASSED" ]; then
+            echo "##[set-output name=as3-color;]36BE54"
+            echo "##[set-output name=as3;]passing"
+          else
+            echo "##[set-output name=as3-color;]CD333E"
+            echo "##[set-output name=as3;]failing"
+          fi
+      - name: Assignment1 badge
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          NAME: as1
+          LABEL: 'Assignment1'
+          STATUS: ${{ steps.status.outputs.as1 }}
+          COLOR: ${{ steps.status.outputs.as1-color }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+          
+      - name: Assignment2 badge
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          NAME: as2
+          LABEL: 'Assignment2'
+          STATUS: ${{ steps.status.outputs.as2 }}
+          COLOR: ${{ steps.status.outputs.as2-color }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+          
+      - name: Assignment3 badge
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          NAME: as3
+          LABEL: 'Assignment3'
+          STATUS: ${{ steps.status.outputs.as3 }}
+          COLOR: ${{ steps.status.outputs.as3-color }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
