@@ -72,6 +72,7 @@ jobs:
             echo "##[set-output name=as3-color;]CD333E"
             echo "##[set-output name=as3;]failing"
           fi
+          
       - name: Assignment1 badge
         uses: RubbaBoy/BYOB@v1.3.0
         with:
