@@ -14,6 +14,7 @@ jobs:
       as1: ${{ steps.tox-tests.outputs.as1 }}
       as2: ${{ steps.tox-tests.outputs.as2 }}
       as3: ${{ steps.tox-tests.outputs.as3 }}
+      as4: ${{ steps.tox-tests.outputs.as4 }}
 
     steps:
     - uses: actions/checkout@v2
@@ -32,6 +33,7 @@ jobs:
         echo "##[set-output name=as1;]$(grep -E '*PA1_test.sql*(PASSED|FAILED)*' tox_output.txt)"
         echo "##[set-output name=as2;]$(grep -E '*PA2_test.sql*(PASSED|FAILED)*' tox_output.txt)"
         echo "##[set-output name=as3;]$(grep -E '*PA3_test.sql*(PASSED|FAILED)*' tox_output.txt)"
+        echo "##[set-output name=as3;]$(grep -E '*PA4_test.sql*(PASSED|FAILED)*' tox_output.txt)"
         
   badge_job:
     if: ${{ always() }}
@@ -41,6 +43,7 @@ jobs:
       as1: ${{ needs.test.outputs.as1 }}
       as2: ${{ needs.test.outputs.as2 }}
       as3: ${{ needs.test.outputs.as3 }}
+      as3: ${{ needs.test.outputs.as4 }}
       
     steps:
       - id: status
@@ -48,6 +51,7 @@ jobs:
           echo  $as1 > as1.txt && echo $(grep -E -o '(PASSED|FAILED)' as1.txt) > as1.txt
           echo  $as2 > as2.txt && echo $(grep -E -o '(PASSED|FAILED)' as2.txt) > as2.txt
           echo  $as3 > as3.txt && echo $(grep -E -o '(PASSED|FAILED)' as3.txt) > as3.txt
+          echo  $as4 > as4.txt && echo $(grep -E -o '(PASSED|FAILED)' as4.txt) > as4.txt
           
           if [ $(cat as1.txt) = "PASSED" ]; then
             echo "##[set-output name=as1-color;]36BE54"
@@ -70,6 +74,14 @@ jobs:
           else
             echo "##[set-output name=as3-color;]CD333E"
             echo "##[set-output name=as3;]failing"
+          fi
+
+          if [ $(cat as4.txt) = "PASSED" ]; then
+            echo "##[set-output name=as4-color;]36BE54"
+            echo "##[set-output name=as4;]passing"
+          else
+            echo "##[set-output name=as4-color;]CD333E"
+            echo "##[set-output name=as4;]failing"
           fi
           
       - name: Assignment1 badge
@@ -100,4 +112,14 @@ jobs:
           ICON: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgNzAwIDcwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBzdHlsZT0iIiB0cmFuc2Zvcm09Im1hdHJpeCgxLjI5MjQ0LCAwLCAwLCAxLjI5MjQ0LCAtMTA4LjgzODkzMSwgLTEyLjUwNjc3NSkiPgogICAgPHBhdGggZD0ibTU1Mi4zNyAzODcuNDd2ODYuNzk3YzAgOS45NzY2LTguNTU4NiAyMS4wNDctMjUuNDk2IDMxLjYzMy0xNi45MzggMTAuNTg2LTQyLjM1OSAyMC4wNzgtNzQuMDYyIDI2LjY4NC02My40MDYgMTMuMjExLTE0Mi4yNiAxMy4yMTEtMjA1LjY3IDAtMzEuNzAzLTYuNjA1NS01Ny4xNDgtMTYuMDk4LTc0LjA4Ni0yNi42ODQtMTYuOTM4LTEwLjU4Ni0yNS40NzMtMjEuNjU2LTI1LjQ3My0zMS42MzN2LTg2LjcyN2M0Ljg3NSA1LjEyODkgMTAuOTMgOS45MjU4IDE3Ljk1MyAxNC4zMTIgMTkuMDc0IDExLjkyNiA0NS44MzYgMjEuNTY2IDc4LjY3MiAyOC40MDYgNjUuNjY4IDEzLjY4NCAxNDUuODcgMTMuNjg0IDIxMS41NCAwIDMyLjgzNi02LjgzOTggNTkuNS0xNi40ODQgNzguNTc0LTI4LjQwNiA3LjA1NDctNC40MDYyIDEzLjE0NS05LjIyNjYgMTguMDQ3LTE0LjM4N3oiIHN0eWxlPSJmaWxsOiByZ2IoMTQ5LCAxNTcsIDE2NSk7Ii8+CiAgICA8cGF0aCBkPSJtNTUyLjM3IDI2MC4xNnY4Ni43OTdjMCA5Ljk3NjYtOC41NTg2IDIxLjA0Ny0yNS40OTYgMzEuNjMzLTE2LjkzOCAxMC41ODYtNDIuMzU5IDIwLjA3OC03NC4wNjIgMjYuNjg0LTYzLjQwNiAxMy4yMTEtMTQyLjI2IDEzLjIxMS0yMDUuNjcgMC0zMS43MDMtNi42MDU1LTU3LjE0OC0xNi4wOTgtNzQuMDg2LTI2LjY4NC0xNi45MzgtMTAuNTktMjUuNDczLTIxLjY1Ni0yNS40NzMtMzEuNjMzdi04Ni43MjdjNC44NzUgNS4xMjg5IDEwLjkzIDkuOTI1OCAxNy45NTMgMTQuMzEyIDE5LjA3NCAxMS45MjYgNDUuODM2IDIxLjU2NiA3OC42NzIgMjguNDA2IDY1LjY2OCAxMy42ODQgMTQ1Ljg3IDEzLjY4NCAyMTEuNTQgMCAzMi44MzYtNi44NDM4IDU5LjUtMTYuNDg0IDc4LjU3NC0yOC40MDYgNy4wNTQ3LTQuNDA2MiAxMy4xNDUtOS4yMjY2IDE4LjA0Ny0xNC4zODd6IiBzdHlsZT0iZmlsbDogcmdiKDE0OSwgMTU3LCAxNjUpOyIvPgogICAgPHBhdGggZD0ibTU1Mi4zNyAxMzIuODV2ODYuNzk3YzAgOS45NzY2LTguNTU4NiAyMS4wNDctMjUuNDk2IDMxLjYzMy0xNi45MzggMTAuNTktNDIuMzU5IDIwLjA3OC03NC4wNjIgMjYuNjg0LTYzLjQwNiAxMy4yMTEtMTQyLjI2IDEzLjIxMS0yMDUuNjcgMC0zMS43MDMtNi42MDU1LTU3LjE0OC0xNi4wOTgtNzQuMDg2LTI2LjY4NHMtMjUuNDczLTIxLjY1Ni0yNS40NzMtMzEuNjMzdi04Ni43MjdjNC44NzUgNS4xMjg5IDEwLjkzIDkuOTI1OCAxNy45NTMgMTQuMzEyIDE5LjA3NCAxMS45MjYgNDUuODM2IDIxLjU2NiA3OC42NzIgMjguNDA2IDY1LjY2OCAxMy42ODQgMTQ1Ljg3IDEzLjY4NCAyMTEuNTQgMCAzMi44MzYtNi44NDM4IDU5LjUtMTYuNDg0IDc4LjU3NC0yOC40MDYgNy4wNTQ3LTQuNDA2MiAxMy4xNDUtOS4yMjY2IDE4LjA0Ny0xNC4zODd6IiBzdHlsZT0iZmlsbDogcmdiKDE0OSwgMTU3LCAxNjUpOyIvPgogICAgPHBhdGggZD0ibTU1Mi40MiA4OC41NTVjMCAzOS4yNDItOTAuNjI1IDcxLjA1NS0yMDIuNDIgNzEuMDU1cy0yMDIuNDItMzEuODEyLTIwMi40Mi03MS4wNTVjMC0zOS4yNDIgOTAuNjI1LTcxLjA1NSAyMDIuNDItNzEuMDU1czIwMi40MiAzMS44MTIgMjAyLjQyIDcxLjA1NSIgc3R5bGU9ImZpbGw6IHJnYigxNDksIDE1NywgMTY1KTsiLz4KICA8L2c+Cjwvc3ZnPg=='
           STATUS: ${{ steps.status.outputs.as3 }}
           COLOR: ${{ steps.status.outputs.as3-color }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+      
+      - name: Assignment4 badge
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          NAME: as4
+          LABEL: 'Assignment4'
+          ICON: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgNzAwIDcwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBzdHlsZT0iIiB0cmFuc2Zvcm09Im1hdHJpeCgxLjI5MjQ0LCAwLCAwLCAxLjI5MjQ0LCAtMTA4LjgzODkzMSwgLTEyLjUwNjc3NSkiPgogICAgPHBhdGggZD0ibTU1Mi4zNyAzODcuNDd2ODYuNzk3YzAgOS45NzY2LTguNTU4NiAyMS4wNDctMjUuNDk2IDMxLjYzMy0xNi45MzggMTAuNTg2LTQyLjM1OSAyMC4wNzgtNzQuMDYyIDI2LjY4NC02My40MDYgMTMuMjExLTE0Mi4yNiAxMy4yMTEtMjA1LjY3IDAtMzEuNzAzLTYuNjA1NS01Ny4xNDgtMTYuMDk4LTc0LjA4Ni0yNi42ODQtMTYuOTM4LTEwLjU4Ni0yNS40NzMtMjEuNjU2LTI1LjQ3My0zMS42MzN2LTg2LjcyN2M0Ljg3NSA1LjEyODkgMTAuOTMgOS45MjU4IDE3Ljk1MyAxNC4zMTIgMTkuMDc0IDExLjkyNiA0NS44MzYgMjEuNTY2IDc4LjY3MiAyOC40MDYgNjUuNjY4IDEzLjY4NCAxNDUuODcgMTMuNjg0IDIxMS41NCAwIDMyLjgzNi02LjgzOTggNTkuNS0xNi40ODQgNzguNTc0LTI4LjQwNiA3LjA1NDctNC40MDYyIDEzLjE0NS05LjIyNjYgMTguMDQ3LTE0LjM4N3oiIHN0eWxlPSJmaWxsOiByZ2IoMTQ5LCAxNTcsIDE2NSk7Ii8+CiAgICA8cGF0aCBkPSJtNTUyLjM3IDI2MC4xNnY4Ni43OTdjMCA5Ljk3NjYtOC41NTg2IDIxLjA0Ny0yNS40OTYgMzEuNjMzLTE2LjkzOCAxMC41ODYtNDIuMzU5IDIwLjA3OC03NC4wNjIgMjYuNjg0LTYzLjQwNiAxMy4yMTEtMTQyLjI2IDEzLjIxMS0yMDUuNjcgMC0zMS43MDMtNi42MDU1LTU3LjE0OC0xNi4wOTgtNzQuMDg2LTI2LjY4NC0xNi45MzgtMTAuNTktMjUuNDczLTIxLjY1Ni0yNS40NzMtMzEuNjMzdi04Ni43MjdjNC44NzUgNS4xMjg5IDEwLjkzIDkuOTI1OCAxNy45NTMgMTQuMzEyIDE5LjA3NCAxMS45MjYgNDUuODM2IDIxLjU2NiA3OC42NzIgMjguNDA2IDY1LjY2OCAxMy42ODQgMTQ1Ljg3IDEzLjY4NCAyMTEuNTQgMCAzMi44MzYtNi44NDM4IDU5LjUtMTYuNDg0IDc4LjU3NC0yOC40MDYgNy4wNTQ3LTQuNDA2MiAxMy4xNDUtOS4yMjY2IDE4LjA0Ny0xNC4zODd6IiBzdHlsZT0iZmlsbDogcmdiKDE0OSwgMTU3LCAxNjUpOyIvPgogICAgPHBhdGggZD0ibTU1Mi4zNyAxMzIuODV2ODYuNzk3YzAgOS45NzY2LTguNTU4NiAyMS4wNDctMjUuNDk2IDMxLjYzMy0xNi45MzggMTAuNTktNDIuMzU5IDIwLjA3OC03NC4wNjIgMjYuNjg0LTYzLjQwNiAxMy4yMTEtMTQyLjI2IDEzLjIxMS0yMDUuNjcgMC0zMS43MDMtNi42MDU1LTU3LjE0OC0xNi4wOTgtNzQuMDg2LTI2LjY4NHMtMjUuNDczLTIxLjY1Ni0yNS40NzMtMzEuNjMzdi04Ni43MjdjNC44NzUgNS4xMjg5IDEwLjkzIDkuOTI1OCAxNy45NTMgMTQuMzEyIDE5LjA3NCAxMS45MjYgNDUuODM2IDIxLjU2NiA3OC42NzIgMjguNDA2IDY1LjY2OCAxMy42ODQgMTQ1Ljg3IDEzLjY4NCAyMTEuNTQgMCAzMi44MzYtNi44NDM4IDU5LjUtMTYuNDg0IDc4LjU3NC0yOC40MDYgNy4wNTQ3LTQuNDA2MiAxMy4xNDUtOS4yMjY2IDE4LjA0Ny0xNC4zODd6IiBzdHlsZT0iZmlsbDogcmdiKDE0OSwgMTU3LCAxNjUpOyIvPgogICAgPHBhdGggZD0ibTU1Mi40MiA4OC41NTVjMCAzOS4yNDItOTAuNjI1IDcxLjA1NS0yMDIuNDIgNzEuMDU1cy0yMDIuNDItMzEuODEyLTIwMi40Mi03MS4wNTVjMC0zOS4yNDIgOTAuNjI1LTcxLjA1NSAyMDIuNDItNzEuMDU1czIwMi40MiAzMS44MTIgMjAyLjQyIDcxLjA1NSIgc3R5bGU9ImZpbGw6IHJnYigxNDksIDE1NywgMTY1KTsiLz4KICA8L2c+Cjwvc3ZnPg=='
+          STATUS: ${{ steps.status.outputs.as4 }}
+          COLOR: ${{ steps.status.outputs.as4-color }}
           GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}

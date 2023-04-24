@@ -37,7 +37,8 @@ def get_expected_stdout(script):
     [
         ("PA1_test.sql", pytest.lazy_fixture("capture_stdout")), 
         ("PA2_test.sql", pytest.lazy_fixture("capture_stdout")),
-        ("PA3_test.sql", pytest.lazy_fixture("capture_stdout"))
+        ("PA3_test.sql", pytest.lazy_fixture("capture_stdout")),
+        ("PA4_test.sql", pytest.lazy_fixture("capture_stdout")),
     ]
 )
 
