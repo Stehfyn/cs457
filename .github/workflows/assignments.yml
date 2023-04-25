@@ -43,7 +43,7 @@ jobs:
       as1: ${{ needs.test.outputs.as1 }}
       as2: ${{ needs.test.outputs.as2 }}
       as3: ${{ needs.test.outputs.as3 }}
-      as3: ${{ needs.test.outputs.as4 }}
+      as4: ${{ needs.test.outputs.as4 }}
       
     steps:
       - id: status

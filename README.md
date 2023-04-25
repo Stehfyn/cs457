@@ -14,6 +14,7 @@
     <img src="https://byob.yarr.is/Stehfyn/cs457/as1/shields" alt="Assignments">
     <img src="https://byob.yarr.is/Stehfyn/cs457/as2/shields" alt="Assignments">
     <img src="https://byob.yarr.is/Stehfyn/cs457/as3/shields" alt="Assignments">
+    <img src="https://byob.yarr.is/Stehfyn/cs457/as4/shields" alt="Assignments">
   </span>
 </div>
 
