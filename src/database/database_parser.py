@@ -141,11 +141,14 @@ class ValueParser(argparse.Action):
     def __strip_non_identifying(self, values):
         unwanted_regardless = [',', '|', '\t']
         semantically_dependent = [('(', ')')]
-
+        
         for i, value in enumerate(values):
             for char in unwanted_regardless:
                 if char in value:
-                    values[i] = value.replace(char, '')
+                    if char == ',':
+                        values[i] = value.replace(char, ", ")
+                    else:
+                        values[i] = value.replace(char, '')
 
         for i , value in enumerate(values):
             #need to do semantic analysis to rid unnecessary '()'
@@ -173,6 +176,10 @@ class ValueParser(argparse.Action):
 
         for i, value in enumerate(values):
             values[i] = values[i].replace("'", "")
+            values[i] = values[i].strip()
+        
+        while '' in values:
+            values.remove('')
 
         return values
     
@@ -374,7 +381,7 @@ def __from_parser():
     parser = argparse.ArgumentParser(exit_on_error=False)
     parser.add_mutually_exclusive_group()
     parser.add_argument("operation", choices=["from"], type=str.lower)
-    parser.add_argument("targets", nargs=1)
+    parser.add_argument("targets", nargs=argparse.ONE_OR_MORE)
     return parser
 
 def __set_attribute_parser():
